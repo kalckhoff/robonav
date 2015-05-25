@@ -1,28 +1,31 @@
-%% Open the TCP/IP-Connection
-jTcpObj = jtcp('request', '192.168.22.123', 5005,'serialize',false);
-mssg = char(jtcp('read',jTcpObj)); 
-disp(mssg);
+%% Globale Difinition IP-Adresse des UR5
 
-%% Send the keyword to authorize the client
-jtcp('write',jTcpObj,int8('Hello Robot'));
-mssg = char(jtcp('read',jTcpObj)); 
-disp(mssg);
+%% Globale Definition der UR5 Armlängen
+global D1 D4 D5 A2 A3;
+D1= 1; D4=10; D5=10; A2=15; A3=5;
 
 %% GetPositionJoints
-jAngles = getPositionJoints(jTcpObj);
+jAngles = getPositionJoints;
+
+%% Berechnung der der Position des End Effectors durch Forwardkinematics
+pos_end_effector = forward_kinematics(jAngles);
 
 
-%%
-newJointAngles = inverse_kinematics(jAngles);
-movePTPJoints(jTcpObj, newJointAngles);
+%% Berechnung der der Zielposition durch Inversekinematics
 
+%target_joints_angels=inverse_kinematics(pos_end_effector);
+
+%% Senden der neuen Winkel zur Erreichung des berechneten Targets
+
+%movePTPJoints(jTcpObj, target_joints_angels);
 
 pause(1)
 
 %%
-jAngles = getPositionJoints(jTcpObj);
+jAngles = getPositionJoints;
 
 %%
 % If 'Quit' used, then you will need to start rob6server again
 % jtcp('write',jTcpObj,int8('Quit'));
-jTcpObj = jtcp('close',jTcpObj);
+%jTcpObj = jtcp('close',jTcpObj);
+%/
