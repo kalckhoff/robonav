@@ -3,9 +3,9 @@ global IP_ADDRESS;
 IP_ADDRESS = '192.168.22.123'; 
 %%
 
-%% Globale Definition der UR5 Armlängen
-global D1 D4 D5 A2 A3;
-D1= 1; D4=10; D5=10; A2=15; A3=5;
+%% Globale Definition der UR5 Armlängen in mm (D4 u D5 können auch vertauscht sein !?)
+global D1 D4 D5 D6 A2 A3;
+D1= 89.2; D4=109.3; D5=94.75; D6=82.5; A2=425; A3=392;
 
 %% GetPositionJoints
 jAngles = getPositionJoints;
