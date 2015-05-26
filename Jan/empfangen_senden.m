@@ -4,7 +4,7 @@ IP_ADDRESS = '192.168.22.123';
 %%
 
 %% Globale Definition der UR5 Armlängen in mm (D4 u D5 können auch vertauscht sein !?)
-global D1 D4 D5 D6 A2 A3;
+global D1 D4 D5 D6 A2 A3 jTcpObj;
 D1= 89.2; D4=109.3; D5=94.75; D6=82.5; A2=425; A3=392;
 
 %% GetPositionJoints
@@ -19,7 +19,7 @@ pos_end_effector = forward_kinematics(jAngles);
 %target_joints_angels=inverse_kinematics(pos_end_effector);
 
 %% Senden der neuen Winkel zur Erreichung des berechneten Targets
-
+target_joints_angels = [0 0 0 0 0 0];
 %movePTPJoints(jTcpObj, target_joints_angels);
 
 pause(1)
