@@ -9,7 +9,6 @@ global A D ALPHA;
 D = [0.089159, 0.0, 0.0, 0.10915, 0.09465, 0.0823];
 A = [0.0, -0.425, -0.39225, 0 , 0, 0];
 ALPHA = [1.570796327, 0, 0, 1.570796327, -1.570796327,0];
-%ALPHA = [90, 0, 0, 90, -90, 0];
 
 %% GetPositionJoints
 jAngles = getPositionJoints;
@@ -23,9 +22,9 @@ pos_end_effector = forward_kinematics(jAngles)
 %target_joints_angels=inverse_kinematics(pos_end_effector);
 
 %% Senden der neuen Winkel zur Erreichung des berechneten Targets
-target_joints_angels = [126 75 53 87 23.645623 7];
+target_joints_angels = [0 234 0 45 0 0];
 
-movePTPJoints(target_joints_angels);
+%movePTPJoints(target_joints_angels);
 
 pause(1)
  
