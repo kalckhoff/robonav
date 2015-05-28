@@ -1,11 +1,14 @@
 %% Globale Definition IP-Adresse des UR5
 global IP_ADDRESS;
-IP_ADDRESS = '192.168.22.123'; 
-%%
+IP_ADDRESS = '10.37.129.4';
 
+%%
 %% Globale Definition der UR5 Armlängen in mm (D4 u D5 können auch vertauscht sein !?)
-global D1 D4 D5 D6 A2 A3;
-D1= 89.2; D4=109.3; D5=94.75; D6=82.5; A2=425; A3=392;
+global A D ALPHA;
+%D1= 89.2; D4=109.3; D5=94.75; D6=82.5; A2=425; A3=392;
+D = [0.089159, 0.0, 0.0, 0.10915, 0.09465, 0.0823];
+A = [0.0, -0.425, -0.39225, 0 , 0, 0];
+ALPHA = [1.570796327, 0, 0, 1.570796327, -1.570796327,0];
 
 %% GetPositionJoints
 jAngles = getPositionJoints;
@@ -19,27 +22,29 @@ pos_end_effector = forward_kinematics(jAngles)
 %target_joints_angels=inverse_kinematics(pos_end_effector);
 
 %% Senden der neuen Winkel zur Erreichung des berechneten Targets
-target_joints_angels = [0 234 0 45 0 0];
+target_joints_angels = [123 76 45 12 83.2 17];
 
 movePTPJoints(target_joints_angels);
 
 pause(1)
+ 
+jAngles = getPositionJoints
 
 %% Open the TCP/IP-Connection
-jTcpObj = jtcp('request', IP_ADDRESS, 5005,'serialize',false);
-mssg = char(jtcp('read',jTcpObj)); 
+%%jTcpObj = jtcp('request', IP_ADDRESS, 5005,'serialize',false);
+%%mssg = char(jtcp('read',jTcpObj)); 
 %disp(mssg);
 
-%% Send the keyword to authorize the client
-jtcp('write',jTcpObj,int8('Hello Robot'));
-mssg = char(jtcp('read',jTcpObj)); 
-disp(mssg);
-
-jtcp('write',jTcpObj,int8('GetPositionHomRowWise'));
-pause(0.1)
-mssg = char(jtcp('read',jTcpObj)); disp(mssg)
-mssgSplit = strsplit(mssg,' ');
-
+% %% Send the keyword to authorize the client
+% jtcp('write',jTcpObj,int8('Hello Robot'));
+% mssg = char(jtcp('read',jTcpObj)); 
+% disp(mssg);
+% 
+% jtcp('write',jTcpObj,int8('GetPositionHomRowWise'));
+% pause(0.1)
+% mssg = char(jtcp('read',jTcpObj)); disp(mssg)
+% mssgSplit = strsplit(mssg,' ');
+% 
 
 %%
 %jAngles = getPositionJoints;
