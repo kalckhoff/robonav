@@ -1,6 +1,6 @@
 %% Globale Definition IP-Adresse des UR5
 global IP_ADDRESS;
-IP_ADDRESS = '192.168.56.102'; 
+IP_ADDRESS = '192.168.192.123'; 
 %%
 
 %% Globale Definition der UR5 Armlängen in mm (D4 u D5 können auch vertauscht sein !?)
