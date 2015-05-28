@@ -1,5 +1,5 @@
 function jointAngles = getPositionJoints()
-global jTcpObj IP_ADDRESS;
+global IP_ADDRESS;
 
 %% Open the TCP/IP-Connection
 jTcpObj = jtcp('request', IP_ADDRESS, 5005,'serialize',false);
@@ -23,8 +23,6 @@ jTcpObj = jtcp('close',jTcpObj);
 % Format: joint angles 1-6
 if isnan (str2double(mssgSplit)) 
     disp('Fehler bei RobServer Verbindung! Falsche IP-Adresse oder Server neustarten!');
-%elseif 0 ==  str2double(mssgSplit)
- %   disp('Fehler bei RobServer Verbindung! Server neustarten!');
 else  
 jointAngles = str2double(mssgSplit);
 end
