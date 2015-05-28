@@ -19,8 +19,9 @@ pos_end_effector = forward_kinematics(jAngles)
 
 
 %% Berechnung der der Zielposition durch Inversekinematics
+pos_target = [0.10, 0.10, 0.10];
 
-%target_joints_angels=inverse_kinematics(pos_end_effector);
+target_joints_angels=inverse_kinematics(pos_target, pos_end_effector);
 
 %% Senden der neuen Winkel zur Erreichung des berechneten Targets
 target_joints_angels = [126 75 53 87 23.645623 7];
