@@ -19,10 +19,27 @@ pos_end_effector = forward_kinematics(jAngles)
 %target_joints_angels=inverse_kinematics(pos_end_effector);
 
 %% Senden der neuen Winkel zur Erreichung des berechneten Targets
-target_joints_angels = [0 0 0 0 0 0];
+target_joints_angels = [0 234 0 45 0 0];
+
 movePTPJoints(target_joints_angels);
 
 pause(1)
+
+%% Open the TCP/IP-Connection
+jTcpObj = jtcp('request', IP_ADDRESS, 5005,'serialize',false);
+mssg = char(jtcp('read',jTcpObj)); 
+%disp(mssg);
+
+%% Send the keyword to authorize the client
+jtcp('write',jTcpObj,int8('Hello Robot'));
+mssg = char(jtcp('read',jTcpObj)); 
+disp(mssg);
+
+jtcp('write',jTcpObj,int8('GetPositionHomRowWise'));
+pause(0.1)
+mssg = char(jtcp('read',jTcpObj)); disp(mssg)
+mssgSplit = strsplit(mssg,' ');
+
 
 %%
 %jAngles = getPositionJoints;
