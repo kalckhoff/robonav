@@ -6,8 +6,8 @@ global A D ALPHA R O;
 %%Defining a rotational part and a translational part
 %%"orientation/psoition-decoupling"
 
-T61 = pos_end_inv;
-T61(2,1)
+% T61 = pos_end_inv;
+% T61(2,1)
 
 rot = zeros(3,3);
 rot(1,1) = cos(R(2))*cos(R(3));
@@ -35,11 +35,11 @@ theta (1,1) = atan2(Oc(2), Oc(1))+ acos(D(4)/r)+pi/2;
 theta (1,2) = atan2(Oc(2), Oc(1))- acos(D(4)/r)+pi/2;
 
 %Elbow up/down
-% theta (3,1) = acos((P13^2-A(2)^2-A(3)^2)/A(2)*A(3));
-% theta (3,2) = -acos((P13^2-A(2)^2-A(3)^2)/A(2)*A(3));
-% 
-% theta (2,1) = -atan2(P13y,-P13x)+ asin((A(3)*sin(theta(3,1)))/P13);
-% theta (2,2) = -atan2(P13y,-P13x)+ asin((A(3)*sin(theta(3,2)))/P13);
+theta (3,1) = acos((P13^2-A(2)^2-A(3)^2)/A(2)*A(3));
+theta (3,2) = -acos((P13^2-A(2)^2-A(3)^2)/A(2)*A(3));
+
+theta (2,1) = -atan2(P13y,-P13x)+ asin((A(3)*sin(theta(3,1)))/P13);
+theta (2,2) = -atan2(P13y,-P13x)+ asin((A(3)*sin(theta(3,2)))/P13);
 
 % theta (4,1) = atan2(T34_xy, T34_xx);
 

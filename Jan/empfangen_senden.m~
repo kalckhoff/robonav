@@ -14,10 +14,10 @@ O = [-0.12011; -0.43176; -0.25393]
 %ALPHA = [90, 0, 0, 90, -90, 0];
 
 %% GetPositionJoints
-jAngles = getPositionJoints;
+%jAngles = getPositionJoints;
 
 %% Berechnung der der Position des End Effectors durch Forwardkinematics
-pos_end_effector = forward_kinematics(jAngles)
+%pos_end_effector = forward_kinematics(jAngles)
 
 
 %% Berechnung der der Zielposition durch Inversekinematics
