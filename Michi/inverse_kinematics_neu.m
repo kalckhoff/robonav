@@ -40,13 +40,17 @@ end
 
 % Theta 5
 
-for i=1:2:3
-    n=1;
-    theta(5,i) = acos((O(1)*sin(theta(1,n))-O(2)*cos(theta(1,n))-D(4))/D(6));
+n = [1 3];
+for i=1:2
+    for j = n(i)
+    theta(5,j) = acos((O(1)*sin(theta(1,i))-O(2)*cos(theta(1,i))-D(4))/D(6));
+    end
 end
-for i=2:2:4
-    n=2;
-    theta(5,i) = -acos((O(1)*sin(theta(1,n))-O(2)*cos(theta(1,n))-D(4))/D(6));
+n = [2 4];
+for i=1:2
+    for j = n(i)
+    theta(5,j) = -acos((O(1)*sin(theta(1,i))-O(2)*cos(theta(1,i))-D(4))/D(6));
+    end
 end
 
 % Theta 6
