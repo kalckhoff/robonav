@@ -9,13 +9,30 @@ function [c1, c2, c3, xmmPerPx, ymmPerPx, allImages] = segmentZPhantomPointsInUS
 
 % Read images
 %I = imread([filenamePref 'fileout_0.jpg']);
-I = imread('data/ultrasoundImagesAndPoses/fileout_0.jpg');
+I = imread('data/ultrasoundImagesAndPoses/fileout_18.jpg');
 %imshow(I)
 %[centers, radii, metric] = imfindcircles(I,[15 30])
+%background = imopen(I,strel('disk',5));
+%I = I - background;
 level = graythresh(I);
 BW = im2bw(I,level);
-%imshow(BW)
-[B,L,N] = bwboundaries(BW,8, 'holes')
+%[B,L,N] = bwboundaries(BW,8, 'holes')
+BW2= bwareafilt(BW,[30 100]);
+for k = 1:20
+    for i = 1:640
+        BW2 (k,i) = 0;
+    end
+end
+s = regionprops(BW2,'centroid');
+centroids = cat(1, s.Centroid);
+centroids_selcted = zeros (3,2);
+for k = 1:420
+       centroids 
+       
+imshow(BW2)
+hold on
+plot(centroids_selcted(:,1),centroids_selcted(:,2), 'b*')
+hold off
 
 % These are just example of expected segmentation results. You would
 % eventually not need the following two lines.
