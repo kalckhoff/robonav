@@ -8,7 +8,14 @@ function [c1, c2, c3, xmmPerPx, ymmPerPx, allImages] = segmentZPhantomPointsInUS
 %   Omer Rajput - MTEC, TUHH.
 
 % Read images
-I = imread([filenamePref 'ultrasoundImagesAndPoses/fileout_0.jpg']);
+%I = imread([filenamePref 'fileout_0.jpg']);
+I = imread('data/ultrasoundImagesAndPoses/fileout_0.jpg');
+%imshow(I)
+%[centers, radii, metric] = imfindcircles(I,[15 30])
+level = graythresh(I);
+BW = im2bw(I,level);
+%imshow(BW)
+B = bwboundaries(BW,4, 'noholes')
 
 % These are just example of expected segmentation results. You would
 % eventually not need the following two lines.
