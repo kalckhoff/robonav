@@ -45,7 +45,7 @@ for idx = 0:numImages-1
     ISeg = imread([filenameSegPref num2str(idx) '.jpg']);
     % Showing the US image
     subplot(1,2,1);
-    imshow(I)
+    ims = imshow(I);
     title('Image from Ultrasound device')
     %
     % Implement here the segmentation
@@ -53,7 +53,7 @@ for idx = 0:numImages-1
     %
     % Showing the original thresholded image with centroids
     subplot(1,2,2);
-    imshow(ISeg)
+    ims1 = imshow(ISeg);
     title('Expected segmentation results')
     
     % It is also helpful to estimate mm per pixel
