@@ -13,7 +13,7 @@ number_of_pictures = 19;
 c1 = zeros (number_of_pictures,2);
 c2 = zeros (number_of_pictures,2);
 c3 = zeros (number_of_pictures,2);
-for n=1:number_of_pictures
+for n=0:number_of_pictures
     data = ['data/ultrasoundImagesAndPoses/fileout_' num2str(n) '.jpg'];
 I = imread(data);
 %imshow(I)
@@ -34,13 +34,13 @@ centroids = cat(1, s.Centroid);
 centroids_sort = sortrows(centroids,2);
 centroids_selected_1 = centroids_sort(1:3,:);  
 centroids_selected_2 = sortrows(centroids_selected_1);
-c1 (n,:) = centroids_selected_2 (1,:);
-c2 (n,:) = centroids_selected_2 (2,:);
-c3 (n,:) = centroids_selected_2 (3,:);
-imshow(BW2)
-hold on
-plot(centroids_selected_2(:,1),centroids_selected_2(:,2), 'b*')
-%pause (1)
+c1 (n+1,:) = centroids_selected_2 (1,:);
+c2 (n+1,:) = centroids_selected_2 (2,:);
+c3 (n+1,:) = centroids_selected_2 (3,:);
+% imshow(BW2)
+% hold on
+% plot(centroids_selected_2(:,1),centroids_selected_2(:,2), 'b*')
+% pause (1)
 end
 % These are just example of expected segmentation results. You would
 % eventually not need the following two lines.
@@ -101,8 +101,4 @@ end
 xmmPerPx = mean(xmmPerPxAll);
 
 % Outputting all zeros - please modify it based on the segmentation above.
-c1 = zeros(numImages,2);
-c2 = zeros(numImages,2);
-c3 = zeros(numImages,2);
-
 end
