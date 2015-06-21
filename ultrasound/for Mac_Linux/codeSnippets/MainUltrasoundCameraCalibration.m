@@ -1,8 +1,8 @@
 %% Ultrasound free hand calibration
 
 %% Measure the wire end-points using Cambar and a stylus
-if (exist('data/zWireEndPoints.mw', 'file'))
-    load('data/zWireEndPoints.mw', '-mat');
+if (exist('data\zWireEndPoints.mw', 'file'))
+    load('data\zWireEndPoints.mw', '-mat');
 else
     [p, TAll] = zWirePhantomInCameraCoord('134.28.45.63');
 end
@@ -53,7 +53,7 @@ surf(rmsDistFromMean(4)*x+meanPointsPhantom(1,4),rmsDistFromMean(4)*y+meanPoints
 
 %% Segmenting Ultrasound images
 numImages = 20;
-[c1, c2, c3, xmmPerPx, ymmPerPx, allImages] = segmentZPhantomPointsInUSImages('data/ultrasoundImagesAndPoses/fileout_', numImages);
+[c1, c2, c3, xmmPerPx, ymmPerPx, allImages] = segmentZPhantomPointsInUSImages('data\ultrasoundImagesAndPoses\fileout_', numImages);
 
 % If the segmented locations are in pixels, convert them to 'mm'.
 scaleMat = diag([xmmPerPx ymmPerPx]);
@@ -66,9 +66,24 @@ c3 = (scaleMat*reshape(c3',2,[]))';
 % sectional points of the z-wire phantom. We can call this point 'zMid') in
 % camera coordinate system.
 % ...
+
+zMidCamera = zeros(20,3);
+
+for i=1:numImages
+    
+c1c2 = sqrt((c1(i,1)^2 - c2(i,1)^2)+(c1(i,2)^2 - c2(i,2)^2));
+c2c3 = sqrt((c2(i,1)^2 - c3(i,1)^2)+(c2(i,2)^2 - c3(i,2)^2));
+c1c3 = sqrt((c1(i,1)^2 - c3(i,1)^2)+(c1(i,2)^2 - c3(i,2)^2));
+
 %% Find the global coordinates of middle of the three cross-sectional 
 % points of the z-wire phanton in ultrasound images
 % zMidCamera = ...
+
+zMidCamera(i,1) = meanPointsPhantom(1,3) + (c2c3/c1c3)*(meanPointsPhantom(1,2)- meanPointsPhantom(1,3));
+zMidCamera(i,2) = meanPointsPhantom(2,3) + (c2c3/c1c3)*(meanPointsPhantom(2,2)- meanPointsPhantom(2,3));
+zMidCamera(i,3) = meanPointsPhantom(2,3) + (c2c3/c1c3)*(meanPointsPhantom(3,2)- meanPointsPhantom(3,3));
+
+end
 
 %% Estimating Tranformation between image coordinate system and US Probe coordinate system.
 
@@ -76,15 +91,37 @@ c3 = (scaleMat*reshape(c3',2,[]))';
 % pose of probe. All of these poses are saved in a text file. 
 
 % Read probe poses
-probePoses = importProbePoses('data/ultrasoundImagesAndPoses/probePoses.txt');
+probePoses = importProbePoses('data\ultrasoundImagesAndPoses\probePoses.txt');
 % 4x4 matrix:
 % timestamp, visible-flag, R00, R01, R02, X, R10, R11, R12, Y, R20, R21, R22, Z, 0, 0, 0, 1
 probePoses = probePoses(:, 3:end);
 
 % zMidCamera can be tranformed to Probe Coordinate System using the above
 % poses
+
 zMidProbe = zeros(numImages,3);
-% ...
+H_Matrix_P = zeros(4,4);
+zMidCamera_P = zeros(4,1);
+zMidProbe_P = zeros(4,1);
+
+% Building the H Matrix to transform the coordinates of a point in CameraCS
+% into the coordinates of a point in ProbeCS; and then I build the
+% complete 20x3 Matrix with the transformed points 
+
+for i=1:numImages 
+    
+H_Matrix_P = [probePoses(i,1) probePoses(i,2) probePoses(i,3) probePoses(i,10); probePoses(i,4) probePoses(i,5) probePoses(i,6) probePoses(i,11); probePoses(i,7) probePoses(i,8) probePoses(i,9) probePoses(i,12) ; 0 0 0 1];
+
+zMidCamera_P = [zMidCamera(i,1); zMidCamera(i,2); zMidCamera(i,3); 1];
+
+zMidProbe_P = H_Matrix_P * zMidCamera_P;
+ 
+zMidProbe(i,1) = zMidProbe_P(1,1);
+zMidProbe(i,2) = zMidProbe_P(2,1);
+zMidProbe(i,3) = zMidProbe_P(3,1); 
+
+end
+
 
 % Appending 0 z-coordinate to the 2D segmented points in image coordinate
 % system.
@@ -148,8 +185,8 @@ diffV = (maxV-minV);
 
 % The mat-file contains an interpolated reconstructed volume of the z-wire
 % phantom from an earlier experiment
-if (exist('data/zWirePhantomVolume.mw', 'file'))
-    load('data/zWirePhantomVolume.mw', '-mat');
+if (exist('data\zWirePhantomVolume.mw', 'file'))
+    load('data\zWirePhantomVolume.mw', '-mat');
 else    
     % creating a grid where we would like to interpolate the data
     [XV,YV,ZV] = meshgrid(minV(1)+1:0.5:maxV(1)-1,minV(2)+1:0.5:maxV(2)-1,minV(3)+1:0.5:maxV(3)-1);

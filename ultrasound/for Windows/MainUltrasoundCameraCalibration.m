@@ -66,9 +66,24 @@ c3 = (scaleMat*reshape(c3',2,[]))';
 % sectional points of the z-wire phantom. We can call this point 'zMid') in
 % camera coordinate system.
 % ...
+
+zMidCamera = zeros(20,3);
+
+for i=1:numImages
+    
+c1c2 = sqrt((c1(i,1)^2 - c2(i,1)^2)+(c1(i,2)^2 - c2(i,2)^2));
+c2c3 = sqrt((c2(i,1)^2 - c3(i,1)^2)+(c2(i,2)^2 - c3(i,2)^2));
+c1c3 = sqrt((c1(i,1)^2 - c3(i,1)^2)+(c1(i,2)^2 - c3(i,2)^2));
+
 %% Find the global coordinates of middle of the three cross-sectional 
 % points of the z-wire phanton in ultrasound images
 % zMidCamera = ...
+
+zMidCamera(i,1) = meanPointsPhantom(1,3) + (c2c3/c1c3)*(meanPointsPhantom(1,2)- meanPointsPhantom(1,3));
+zMidCamera(i,2) = meanPointsPhantom(2,3) + (c2c3/c1c3)*(meanPointsPhantom(2,2)- meanPointsPhantom(2,3));
+zMidCamera(i,3) = meanPointsPhantom(2,3) + (c2c3/c1c3)*(meanPointsPhantom(3,2)- meanPointsPhantom(3,3));
+
+end
 
 %% Estimating Tranformation between image coordinate system and US Probe coordinate system.
 
@@ -83,8 +98,30 @@ probePoses = probePoses(:, 3:end);
 
 % zMidCamera can be tranformed to Probe Coordinate System using the above
 % poses
+
 zMidProbe = zeros(numImages,3);
-% ...
+H_Matrix_P = zeros(4,4);
+zMidCamera_P = zeros(4,1);
+zMidProbe_P = zeros(4,1);
+
+% Building the H Matrix to transform the coordinates of a point in CameraCS
+% into the coordinates of a point in ProbeCS; and then I build the
+% complete 20x3 Matrix with the transformed points 
+
+for i=1:numImages 
+    
+H_Matrix_P = [probePoses(i,1) probePoses(i,2) probePoses(i,3) probePoses(i,10); probePoses(i,4) probePoses(i,5) probePoses(i,6) probePoses(i,11); probePoses(i,7) probePoses(i,8) probePoses(i,9) probePoses(i,12) ; 0 0 0 1];
+
+zMidCamera_P = [zMidCamera(i,1); zMidCamera(i,2); zMidCamera(i,3); 1];
+
+zMidProbe_P = H_Matrix_P * zMidCamera_P;
+ 
+zMidProbe(i,1) = zMidProbe_P(1,1);
+zMidProbe(i,2) = zMidProbe_P(2,1);
+zMidProbe(i,3) = zMidProbe_P(3,1); 
+
+end
+
 
 % Appending 0 z-coordinate to the 2D segmented points in image coordinate
 % system.
