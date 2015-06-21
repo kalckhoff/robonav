@@ -9,7 +9,13 @@ function [c1, c2, c3, xmmPerPx, ymmPerPx, allImages] = segmentZPhantomPointsInUS
 
 % Read images
 %I = imread([filenamePref 'fileout_0.jpg']);
-I = imread('data/ultrasoundImagesAndPoses/fileout_18.jpg');
+number_of_pictures = 19;
+c1 = zeros (number_of_pictures,2);
+c2 = zeros (number_of_pictures,2);
+c3 = zeros (number_of_pictures,2);
+for n=1:number_of_pictures
+    data = ['data/ultrasoundImagesAndPoses/fileout_' num2str(n) '.jpg'];
+I = imread(data);
 %imshow(I)
 %[centers, radii, metric] = imfindcircles(I,[15 30])
 %background = imopen(I,strel('disk',5));
@@ -17,7 +23,7 @@ I = imread('data/ultrasoundImagesAndPoses/fileout_18.jpg');
 level = graythresh(I);
 BW = im2bw(I,level);
 %[B,L,N] = bwboundaries(BW,8, 'holes')
-BW2= bwareafilt(BW,[30 100]);
+BW2= bwareafilt(BW,[5 120]);
 for k = 1:20
     for i = 1:640
         BW2 (k,i) = 0;
@@ -25,15 +31,17 @@ for k = 1:20
 end
 s = regionprops(BW2,'centroid');
 centroids = cat(1, s.Centroid);
-centroids_selcted = zeros (3,2);
-for k = 1:420
-       centroids 
-       
+centroids_sort = sortrows(centroids,2);
+centroids_selected_1 = centroids_sort(1:3,:);  
+centroids_selected_2 = sortrows(centroids_selected_1);
+c1 (n,:) = centroids_selected_2 (1,:);
+c2 (n,:) = centroids_selected_2 (2,:);
+c3 (n,:) = centroids_selected_2 (3,:);
 imshow(BW2)
 hold on
-plot(centroids_selcted(:,1),centroids_selcted(:,2), 'b*')
-hold off
-
+plot(centroids_selected_2(:,1),centroids_selected_2(:,2), 'b*')
+%pause (1)
+end
 % These are just example of expected segmentation results. You would
 % eventually not need the following two lines.
 filenamePrefSplit = strsplit(filenamePref, {'/','\'});
