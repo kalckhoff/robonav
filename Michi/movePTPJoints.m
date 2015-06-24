@@ -17,3 +17,4 @@ pause(0.1)
 %mssg = char(jtcp('read',jTcpObj)); disp(mssg);
 
 jTcpObj = jtcp('close',jTcpObj);
+end
