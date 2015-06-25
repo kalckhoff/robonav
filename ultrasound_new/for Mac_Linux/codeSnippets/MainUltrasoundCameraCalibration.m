@@ -52,8 +52,8 @@ surf(rmsDistFromMean(4)*x+meanPointsPhantom(1,4),rmsDistFromMean(4)*y+meanPoints
 % segmentation results.
 
 %% Segmenting Ultrasound images
-numImages = 20;
-[c1, c2, c3, xmmPerPx, ymmPerPx, allImages] = segmentZPhantomPointsInUSImages('data/ultrasoundImagesAndPoses/fileout_', numImages);
+numImages = 25;
+[c1, c2, c3, xmmPerPx, ymmPerPx, allImages] = segmentZPhantomPointsInUSImages('data/ultrasoundImagesAndPoses/fileoutpos.txt_', numImages);
 
 % If the segmented locations are in pixels, convert them to 'mm'.
 scaleMat = diag([xmmPerPx ymmPerPx]);
