@@ -52,8 +52,8 @@ surf(rmsDistFromMean(4)*x+meanPointsPhantom(1,4),rmsDistFromMean(4)*y+meanPoints
 % segmentation results.
 
 %% Segmenting Ultrasound images
-numImages = 19;
-[c1, c2, c3, xmmPerPx, ymmPerPx, allImages] = segmentZPhantomPointsInUSImages('data/ultrasoundImagesAndPoses/fileout_', numImages);
+numImages = 20;
+[c1, c2, c3, xmmPerPx, ymmPerPx, allImages] = segmentZPhantomPointsInUSImages('data\ultrasoundImagesAndPoses\fileout_', numImages);
 
 % If the segmented locations are in pixels, convert them to 'mm'.
 scaleMat = diag([xmmPerPx ymmPerPx]);
@@ -71,17 +71,22 @@ zMidCamera = zeros(20,3);
 
 for i=1:numImages
     
-c1c2 = sqrt((c1(i,1)^2 - c2(i,1)^2)+(c1(i,2)^2 - c2(i,2)^2));
-c2c3 = sqrt((c2(i,1)^2 - c3(i,1)^2)+(c2(i,2)^2 - c3(i,2)^2));
-c1c3 = sqrt((c1(i,1)^2 - c3(i,1)^2)+(c1(i,2)^2 - c3(i,2)^2));
+c1c2 = sqrt((c1(i,1) - c2(i,1))^2+(c1(i,2) - c2(i,2))^2);
+c2c3 = sqrt((c2(i,1) - c3(i,1))^2+(c2(i,2) - c3(i,2))^2);
+c1c3 = sqrt((c1(i,1) - c3(i,1))^2+(c1(i,2) - c3(i,2))^2);
 
 %% Find the global coordinates of middle of the three cross-sectional 
 % points of the z-wire phanton in ultrasound images
 % zMidCamera = ...
 
-zMidCamera(i,1) = meanPointsPhantom(1,3) + (c2c3/c1c3)*(meanPointsPhantom(1,2)- meanPointsPhantom(1,3));
-zMidCamera(i,2) = meanPointsPhantom(2,3) + (c2c3/c1c3)*(meanPointsPhantom(2,2)- meanPointsPhantom(2,3));
-zMidCamera(i,3) = meanPointsPhantom(2,3) + (c2c3/c1c3)*(meanPointsPhantom(3,2)- meanPointsPhantom(3,3));
+% zMidCamera(i,1) = meanPointsPhantom(1,3) + (c2c3/c1c3)*(meanPointsPhantom(1,2)- meanPointsPhantom(1,3));
+% zMidCamera(i,2) = meanPointsPhantom(2,3) + (c2c3/c1c3)*(meanPointsPhantom(2,2)- meanPointsPhantom(2,3));
+% zMidCamera(i,3) = meanPointsPhantom(2,3) + (c2c3/c1c3)*(meanPointsPhantom(3,2)- meanPointsPhantom(3,3));
+
+zMidCamera(i,1) = meanPointsPhantom(1,3) + (c1c2/c1c3)*(meanPointsPhantom(1,2)- meanPointsPhantom(1,3));
+zMidCamera(i,2) = meanPointsPhantom(2,3) + (c1c2/c1c3)*(meanPointsPhantom(2,2)- meanPointsPhantom(2,3));
+zMidCamera(i,3) = meanPointsPhantom(3,3) + (c1c2/c1c3)*(meanPointsPhantom(3,2)- meanPointsPhantom(3,3));
+
 
 end
 
@@ -110,15 +115,15 @@ zMidProbe_P = zeros(4,1);
 
 for i=1:numImages 
     
-H_Matrix_P = [probePoses(i,1) probePoses(i,2) probePoses(i,3) probePoses(i,10); probePoses(i,4) probePoses(i,5) probePoses(i,6) probePoses(i,11); probePoses(i,7) probePoses(i,8) probePoses(i,9) probePoses(i,12) ; 0 0 0 1];
+H_Matrix_P = [probePoses(i,1) probePoses(i,2) probePoses(i,3) probePoses(i,4); probePoses(i,5) probePoses(i,6) probePoses(i,7) probePoses(i,8); probePoses(i,9) probePoses(i,10) probePoses(i,11) probePoses(i,12) ; 0 0 0 1];
 
 zMidCamera_P = [zMidCamera(i,1); zMidCamera(i,2); zMidCamera(i,3); 1];
 
-zMidProbe_P = H_Matrix_P * zMidCamera_P;
+zMidProbe_P = inv(H_Matrix_P) * zMidCamera_P;
  
 zMidProbe(i,1) = zMidProbe_P(1,1);
 zMidProbe(i,2) = zMidProbe_P(2,1);
-zMidProbe(i,3) = zMidProbe_P(3,1); 
+zMidProbe(i,3) = zMidProbe_P(3,1);
 
 end
 
@@ -130,8 +135,24 @@ zMidImage = [c2 zeros(numImages,1)];
 % Using least squares to estimate the transformation
 [R,T,Yf,ErrUSP] = rot3dfit(zMidImage,zMidProbe);
 tfMatImageToProbe = [[R' T']; [zeros(1,3) 1]];
-% zInImageToCamera = ...
-% ...
+
+figure, scatter3(zMidProbe(:,1),zMidProbe(:,2),zMidProbe(:,3))
+hold on; scatter3(Yf(:,1),Yf(:,2),Yf(:,3))
+axis equal vis3d
+
+zInImageToCamera = zeros(numImages,3);
+zInImageToCamera_P = zeros(4,1);
+
+for i=1:numImages 
+    
+H_Matrix_P = [probePoses(i,1) probePoses(i,2) probePoses(i,3) probePoses(i,4); probePoses(i,5) probePoses(i,6) probePoses(i,7) probePoses(i,8); probePoses(i,9) probePoses(i,10) probePoses(i,11) probePoses(i,12) ; 0 0 0 1];
+zMidImage_P = [zMidImage(i,1); zMidImage(i,2); zMidImage(i,3); 1];
+
+zInImageToCamera_P = H_Matrix_P * tfMatImageToProbe * zMidImage_P;
+ 
+zInImageToCamera(i,:) = zInImageToCamera_P(1:3)';
+
+end
 
 %% Visualize the calibration error
 % Comparing the zMidCamera and zInImageToCamera
@@ -139,19 +160,19 @@ tfMatImageToProbe = [[R' T']; [zeros(1,3) 1]];
 %%%% Uncomment the following lines, once you have computed zMidCamera and 
 %%%% zInImageToCamera
 
-% hold on; % plot over the last figure
-% zMidCompX = [zMidCamera(:,1)'; zInImageToCamera(:,1)'];
-% zMidCompY = [zMidCamera(:,2)'; zInImageToCamera(:,2)'];
-% zMidCompZ = [zMidCamera(:,3)'; zInImageToCamera(:,3)'];
-% plot3(zMidCamera(:,1), zMidCamera(:,2), zMidCamera(:,3), '*')
-% plot3(zMidCompX, zMidCompY, zMidCompZ, 'r+-')
-% hold off;
-% axis equal
-% axis vis3d
-% xlabel('x')
-% ylabel('y')
-% zlabel('z')
-% title('Z-Wire Phantom and detected mid-points in camera reference frame')
+hold on; % plot over the last figure
+zMidCompX = [zMidCamera(:,1)'; zInImageToCamera(:,1)'];
+zMidCompY = [zMidCamera(:,2)'; zInImageToCamera(:,2)'];
+zMidCompZ = [zMidCamera(:,3)'; zInImageToCamera(:,3)'];
+plot3(zMidCamera(:,1), zMidCamera(:,2), zMidCamera(:,3), '*')
+plot3(zMidCompX, zMidCompY, zMidCompZ, 'r+-')
+hold off;
+axis equal
+axis vis3d
+xlabel('x')
+ylabel('y')
+zlabel('z')
+title('Z-Wire Phantom and detected mid-points in camera reference frame')
 
 %% Transform Images to Camera coordinate system
 sz = size(allImages);
@@ -198,51 +219,51 @@ end
 
 %% Visualization of the volume
 % plot isosurfaces at each level, using direct color mapping
-scrsz = get(groot,'ScreenSize');
-figure('Renderer','opengl','Position',[10 scrsz(4)*3/4 scrsz(3)*3/4 scrsz(4)*3/4]);
-
-% volumetric data, and iso-levels we want to visualize
-isovalues = linspace(10,40,4);
-fAlphaVals = linspace(0.1,0.4,4);
-fAlphaVals(4) = 1;
-num = numel(isovalues);
-
-p = zeros(num,1);
-for i=1:num
-    p(i) = patch( isosurface(XV,YV,ZV,Vq,isovalues(i)) );
-    isonormals(XV,YV,ZV,Vq,p(i))
-    set(p(i), 'CData',i);
-    set(p(i), 'FaceAlpha',fAlphaVals(i));
-end
-set(p, 'CDataMapping','direct', 'FaceColor','flat', 'EdgeColor','none')
-
-% define the colormap
-clr = hsv(num);
-colormap(clr)
-
-% fix the colorbar to show iso-levels and their corresponding color
-caxis([0 num])
-colorbar('YTick',(1:num)+0.5, 'YTickLabel',num2str(isovalues(:)))
-
-% tweak the plot and view
-box on; grid on; view(-95,-35);
-axis tight;
-axis vis3d; daspect([1 1 1])
-camproj perspective
-camlight; lighting gouraud;
-rotate3d on
-
-title('Example: Reconstructed volume of the z-wire phantom')
-
-hold on
-mp = zeros(2,1);idp = 1;
-mp(idp) = plot3(meanPointsPhantom(1,:), meanPointsPhantom(2,:), meanPointsPhantom(3,:), '*-');idp = idp+1;
-% mp(idp) = plot3(zMidCamera(:,1), zMidCamera(:,2), zMidCamera(:,3), '*');idp = idp+1;
-hold off;
-
-angRot = 10;
-for idy = 1:90/angRot
-    rotate([p; mp],normalToZWire,angRot)
-    drawnow
-    pause(0.01)
-end
+% scrsz = get(groot,'ScreenSize');
+% figure('Renderer','opengl','Position',[10 scrsz(4)*3/4 scrsz(3)*3/4 scrsz(4)*3/4]);
+% 
+% % volumetric data, and iso-levels we want to visualize
+% isovalues = linspace(10,40,4);
+% fAlphaVals = linspace(0.1,0.4,4);
+% fAlphaVals(4) = 1;
+% num = numel(isovalues);
+% 
+% p = zeros(num,1);
+% for i=1:num
+%     p(i) = patch( isosurface(XV,YV,ZV,Vq,isovalues(i)) );
+%     isonormals(XV,YV,ZV,Vq,p(i))
+%     set(p(i), 'CData',i);
+%     set(p(i), 'FaceAlpha',fAlphaVals(i));
+% end
+% set(p, 'CDataMapping','direct', 'FaceColor','flat', 'EdgeColor','none')
+% 
+% % define the colormap
+% clr = hsv(num);
+% colormap(clr)
+% 
+% % fix the colorbar to show iso-levels and their corresponding color
+% caxis([0 num])
+% colorbar('YTick',(1:num)+0.5, 'YTickLabel',num2str(isovalues(:)))
+% 
+% % tweak the plot and view
+% box on; grid on; view(-95,-35);
+% axis tight;
+% axis vis3d; daspect([1 1 1])
+% camproj perspective
+% camlight; lighting gouraud;
+% rotate3d on
+% 
+% title('Example: Reconstructed volume of the z-wire phantom')
+% 
+% hold on
+% mp = zeros(2,1);idp = 1;
+% mp(idp) = plot3(meanPointsPhantom(1,:), meanPointsPhantom(2,:), meanPointsPhantom(3,:), '*-');idp = idp+1;
+% % mp(idp) = plot3(zMidCamera(:,1), zMidCamera(:,2), zMidCamera(:,3), '*');idp = idp+1;
+% hold off;
+% 
+% angRot = 10;
+% for idy = 1:90/angRot
+%     rotate([p; mp],normalToZWire,angRot)
+%     drawnow
+%     pause(0.01)
+% end

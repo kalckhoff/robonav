@@ -1,8 +1,8 @@
 %% Ultrasound free hand calibration
 
 %% Measure the wire end-points using Cambar and a stylus
-if (exist('data/zWireEndPoints.mw', 'file'))
-    load('data/zWireEndPoints.mw', '-mat');
+if (exist('data\zWireEndPoints.mw', 'file'))
+    load('data\zWireEndPoints.mw', '-mat');
 else
     [p, TAll] = zWirePhantomInCameraCoord('134.28.45.63');
 end
@@ -52,8 +52,8 @@ surf(rmsDistFromMean(4)*x+meanPointsPhantom(1,4),rmsDistFromMean(4)*y+meanPoints
 % segmentation results.
 
 %% Segmenting Ultrasound images
-numImages = 20;
-[c1, c2, c3, xmmPerPx, ymmPerPx, allImages] = segmentZPhantomPointsInUSImages('data/ultrasoundImagesAndPoses/fileout_', numImages);
+numImages = 25;
+[c1, c2, c3, xmmPerPx, ymmPerPx, allImages] = segmentZPhantomPointsInUSImages('data\ultrasoundImagesAndPoses\fileoutpos.txt_', numImages);
 
 % If the segmented locations are in pixels, convert them to 'mm'.
 scaleMat = diag([xmmPerPx ymmPerPx]);
@@ -96,7 +96,7 @@ end
 % pose of probe. All of these poses are saved in a text file. 
 
 % Read probe poses
-probePoses = importProbePoses('data/ultrasoundImagesAndPoses/probePoses.txt');
+probePoses = importProbePoses('data\ultrasoundImagesAndPoses\probePoses.txt');
 % 4x4 matrix:
 % timestamp, visible-flag, R00, R01, R02, X, R10, R11, R12, Y, R20, R21, R22, Z, 0, 0, 0, 1
 probePoses = probePoses(:, 3:end);
@@ -206,8 +206,8 @@ diffV = (maxV-minV);
 
 % The mat-file contains an interpolated reconstructed volume of the z-wire
 % phantom from an earlier experiment
-if (exist('data/zWirePhantomVolume.mw', 'file'))
-    load('data/zWirePhantomVolume.mw', '-mat');
+if (exist('data\zWirePhantomVolume.mw', 'file'))
+    load('data\zWirePhantomVolume.mw', '-mat');
 else    
     % creating a grid where we would like to interpolate the data
     [XV,YV,ZV] = meshgrid(minV(1)+1:0.5:maxV(1)-1,minV(2)+1:0.5:maxV(2)-1,minV(3)+1:0.5:maxV(3)-1);
