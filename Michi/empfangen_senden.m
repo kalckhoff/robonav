@@ -2,8 +2,8 @@ clear all;
 close all;
 %% Globale Definition IP-Adresse des UR5
 global IP_ADDRESS;
-IP_ADDRESS = '192.168.56.101';
-
+%IP_ADDRESS = '192.168.56.101';
+IP_ADDRESS = '134.28.45.95';
 
 %% Globale Definition der UR5 Arml�ngen in mm (D4 u D5 k�nnen auch vertauscht sein !?)
 global A D ALPHA;
@@ -48,13 +48,13 @@ showpose(pos_joint);
 
 %% Anfahren der Home-Position
 
-% movehome();
+%movehome();
 
 %% Anfahren des Targets
 
-new_config = ['noflip' ' ' 'up' ' ' 'lefty'];
+new_config = ['noflip' ' ' 'up' ' ' 'righty'];
 
-check = isPossible(target_pos, new_config);
+check = isPossible(target_pos, new_config)
 
 movetoconfig(target_pos, new_config);
 
@@ -64,7 +64,7 @@ movetoconfig(target_pos, new_config);
 %moveLINJoints(target_joints_angels);
 
 % new_angles = target_joints_angles +20;
-% movePTPJoints();
+%movePTPJoints(-19.244678 -121.423508 88.558649 -151.915749 4.570095 -265.614639);
 
 %pause(1)
  
