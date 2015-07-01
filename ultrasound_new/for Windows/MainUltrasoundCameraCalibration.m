@@ -154,6 +154,9 @@ zInImageToCamera(i,:) = zInImageToCamera_P(1:3)';
 
 end
 
+zInImageToCamera = zeros(3,4);
+dlmwrite('zImageToCamera.txt',zInImageToCamera,'delimiter',' ')
+
 %% Visualize the calibration error
 % Comparing the zMidCamera and zInImageToCamera
 

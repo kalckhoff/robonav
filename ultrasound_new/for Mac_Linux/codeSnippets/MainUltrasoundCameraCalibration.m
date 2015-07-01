@@ -143,6 +143,7 @@ axis equal vis3d
 zInImageToCamera = zeros(numImages,3);
 zInImageToCamera_P = zeros(4,1);
 
+
 for i=1:numImages 
     
 H_Matrix_P = [probePoses(i,1) probePoses(i,2) probePoses(i,3) probePoses(i,4); probePoses(i,5) probePoses(i,6) probePoses(i,7) probePoses(i,8); probePoses(i,9) probePoses(i,10) probePoses(i,11) probePoses(i,12) ; 0 0 0 1];
@@ -153,7 +154,8 @@ zInImageToCamera_P = H_Matrix_P * tfMatImageToProbe * zMidImage_P;
 zInImageToCamera(i,:) = zInImageToCamera_P(1:3)';
 
 end
-
+zInImageToCamera = zeros(3,4);
+dlmwrite('zImageToCamera.txt',zInImageToCamera,'delimiter',' ')
 %% Visualize the calibration error
 % Comparing the zMidCamera and zInImageToCamera
 
