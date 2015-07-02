@@ -52,11 +52,12 @@ surf(rmsDistFromMean(4)*x+meanPointsPhantom(1,4),rmsDistFromMean(4)*y+meanPoints
 % segmentation results.
 
 %% Segmenting Ultrasound images
-numImages = 25;
-[c1, c2, c3, xmmPerPx, ymmPerPx, allImages] = segmentZPhantomPointsInUSImages('data/ultrasoundImagesAndPoses/fileoutpos.txt_', numImages);
+numImages = 20;
+[c1, c2, c3, xmmPerPx, ymmPerPx, allImages] = segmentZPhantomPointsInUSImages('data/ultrasoundImagesAndPoses/fileout_', numImages);
 
 % If the segmented locations are in pixels, convert them to 'mm'.
 scaleMat = diag([xmmPerPx ymmPerPx]);
+dlmwrite('scaleMat.txt',scaleMat,'delimiter',' ');
 c1 = (scaleMat*reshape(c1',2,[]))';
 c2 = (scaleMat*reshape(c2',2,[]))';
 c3 = (scaleMat*reshape(c3',2,[]))';
@@ -136,6 +137,8 @@ zMidImage = [c2 zeros(numImages,1)];
 [R,T,Yf,ErrUSP] = rot3dfit(zMidImage,zMidProbe);
 tfMatImageToProbe = [[R' T']; [zeros(1,3) 1]];
 
+dlmwrite('tfMatImageToProbe.txt',tfMatImageToProbe,'delimiter',' ')
+
 figure, scatter3(zMidProbe(:,1),zMidProbe(:,2),zMidProbe(:,3))
 hold on; scatter3(Yf(:,1),Yf(:,2),Yf(:,3))
 axis equal vis3d
@@ -154,8 +157,7 @@ zInImageToCamera_P = H_Matrix_P * tfMatImageToProbe * zMidImage_P;
 zInImageToCamera(i,:) = zInImageToCamera_P(1:3)';
 
 end
-zInImageToCamera = zeros(3,4);
-dlmwrite('zImageToCamera.txt',zInImageToCamera,'delimiter',' ')
+
 %% Visualize the calibration error
 % Comparing the zMidCamera and zInImageToCamera
 
