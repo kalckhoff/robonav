@@ -6,7 +6,11 @@ if (exist('data\zWireEndPoints.mw', 'file'))
 else
     [p, TAll] = zWirePhantomInCameraCoord('134.28.45.63');
 end
-
+deleteLast = true;
+if deleteLast
+    p = p(:,1:end-4);
+    TAll = TAll(:,1:end-4);
+end
 % Four points for the Z-Phantom
 p1Obs = [p(1,1:4:end); p(2,1:4:end); p(3,1:4:end)];
 p2Obs = [p(1,2:4:end); p(2,2:4:end); p(3,2:4:end)];
@@ -33,16 +37,6 @@ theta = acosd((p1p2./norm(p1p2))'*(p3p4./norm(p3p4)));
 % Normal to the z-wire phantom - later used for visualization purposes.
 normalToZWire = cross(p1p2, p2p3);
 normalToZWire = normalToZWire./norm(normalToZWire);
-%% Visualize Z-Wire phantom
-figure;hold on;
-plot3(meanPointsPhantom(1,:), meanPointsPhantom(2,:), meanPointsPhantom(3,:), '*-')
-text(meanPointsPhantom(1,:), meanPointsPhantom(2,:), meanPointsPhantom(3,:), ['p1'; 'p2'; 'p3'; 'p4'])
-rmsDistFromMean = [rmsDeviation(p1Obs, meanPointsPhantom(:,1)) rmsDeviation(p2Obs, meanPointsPhantom(:,2)) rmsDeviation(p3Obs, meanPointsPhantom(:,3)) rmsDeviation(p4Obs, meanPointsPhantom(:,4))];
-[x,y,z] = sphere;
-surf(rmsDistFromMean(1)*x+meanPointsPhantom(1,1),rmsDistFromMean(1)*y+meanPointsPhantom(2,1),rmsDistFromMean(1)*z+meanPointsPhantom(3,1),'EdgeColor','none')
-surf(rmsDistFromMean(2)*x+meanPointsPhantom(1,2),rmsDistFromMean(2)*y+meanPointsPhantom(2,2),rmsDistFromMean(2)*z+meanPointsPhantom(3,2),'EdgeColor','none')
-surf(rmsDistFromMean(3)*x+meanPointsPhantom(1,3),rmsDistFromMean(3)*y+meanPointsPhantom(2,3),rmsDistFromMean(3)*z+meanPointsPhantom(3,3),'EdgeColor','none')
-surf(rmsDistFromMean(4)*x+meanPointsPhantom(1,4),rmsDistFromMean(4)*y+meanPointsPhantom(2,4),rmsDistFromMean(4)*z+meanPointsPhantom(3,4),'EdgeColor','none')
 
 %% Acquire Ultrasound images and corresponding poses of the US probe
 % Take at least 20 images. 
@@ -52,11 +46,12 @@ surf(rmsDistFromMean(4)*x+meanPointsPhantom(1,4),rmsDistFromMean(4)*y+meanPoints
 % segmentation results.
 
 %% Segmenting Ultrasound images
-numImages = 20;
-[c1, c2, c3, xmmPerPx, ymmPerPx, allImages] = segmentZPhantomPointsInUSImages('data\ultrasoundImagesAndPoses\fileout_', numImages);
+numImages = 25;
+[c1, c2, c3, xmmPerPx, ymmPerPx, allImages] = segmentZPhantomPointsInUSImages('data\ultrasoundImagesAndPoses\fileoutpos.txt_', numImages);
 
 % If the segmented locations are in pixels, convert them to 'mm'.
 scaleMat = diag([xmmPerPx ymmPerPx]);
+dlmwrite('scaleMat.txt',scaleMat,'delimiter',' ');
 c1 = (scaleMat*reshape(c1',2,[]))';
 c2 = (scaleMat*reshape(c2',2,[]))';
 c3 = (scaleMat*reshape(c3',2,[]))';
@@ -67,7 +62,7 @@ c3 = (scaleMat*reshape(c3',2,[]))';
 % camera coordinate system.
 % ...
 
-zMidCamera = zeros(20,3);
+zMidCamera = zeros(numImages,3);
 
 for i=1:numImages
     
@@ -96,7 +91,7 @@ end
 % pose of probe. All of these poses are saved in a text file. 
 
 % Read probe poses
-probePoses = importProbePoses('data\ultrasoundImagesAndPoses\probePoses.txt');
+probePoses = importProbePoses('data\ultrasoundImagesAndPoses\fileoutpos.txt');
 % 4x4 matrix:
 % timestamp, visible-flag, R00, R01, R02, X, R10, R11, R12, Y, R20, R21, R22, Z, 0, 0, 0, 1
 probePoses = probePoses(:, 3:end);
@@ -136,6 +131,8 @@ zMidImage = [c2 zeros(numImages,1)];
 [R,T,Yf,ErrUSP] = rot3dfit(zMidImage,zMidProbe);
 tfMatImageToProbe = [[R' T']; [zeros(1,3) 1]];
 
+dlmwrite('tfMatImageToProbe.txt',tfMatImageToProbe,'delimiter',' ')
+
 figure, scatter3(zMidProbe(:,1),zMidProbe(:,2),zMidProbe(:,3))
 hold on; scatter3(Yf(:,1),Yf(:,2),Yf(:,3))
 axis equal vis3d
@@ -154,11 +151,22 @@ zInImageToCamera(i,:) = zInImageToCamera_P(1:3)';
 
 end
 
+% zInImageToCamera = zeros(3,4);
+dlmwrite('zImageToCamera.txt',zInImageToCamera,'delimiter',' ')
+
 %% Visualize the calibration error
 % Comparing the zMidCamera and zInImageToCamera
 
-%%%% Uncomment the following lines, once you have computed zMidCamera and 
-%%%% zInImageToCamera
+% Visualize Z-Wire phantom
+figure;hold on;
+plot3(meanPointsPhantom(1,:), meanPointsPhantom(2,:), meanPointsPhantom(3,:), '*-')
+text(meanPointsPhantom(1,:), meanPointsPhantom(2,:), meanPointsPhantom(3,:), ['p1'; 'p2'; 'p3'; 'p4'])
+rmsDistFromMean = [rmsDeviation(p1Obs, meanPointsPhantom(:,1)) rmsDeviation(p2Obs, meanPointsPhantom(:,2)) rmsDeviation(p3Obs, meanPointsPhantom(:,3)) rmsDeviation(p4Obs, meanPointsPhantom(:,4))];
+[x,y,z] = sphere;
+surf(rmsDistFromMean(1)*x+meanPointsPhantom(1,1),rmsDistFromMean(1)*y+meanPointsPhantom(2,1),rmsDistFromMean(1)*z+meanPointsPhantom(3,1),'EdgeColor','none')
+surf(rmsDistFromMean(2)*x+meanPointsPhantom(1,2),rmsDistFromMean(2)*y+meanPointsPhantom(2,2),rmsDistFromMean(2)*z+meanPointsPhantom(3,2),'EdgeColor','none')
+surf(rmsDistFromMean(3)*x+meanPointsPhantom(1,3),rmsDistFromMean(3)*y+meanPointsPhantom(2,3),rmsDistFromMean(3)*z+meanPointsPhantom(3,3),'EdgeColor','none')
+surf(rmsDistFromMean(4)*x+meanPointsPhantom(1,4),rmsDistFromMean(4)*y+meanPointsPhantom(2,4),rmsDistFromMean(4)*z+meanPointsPhantom(3,4),'EdgeColor','none')
 
 hold on; % plot over the last figure
 zMidCompX = [zMidCamera(:,1)'; zInImageToCamera(:,1)'];
@@ -199,23 +207,23 @@ for idx = 1:numImages
 end
 
 %% Interpolating the volume
-minV = min(allImagesAs3DPtsInWorldWithIntensity(:,1:3));
-maxV = max(allImagesAs3DPtsInWorldWithIntensity(:,1:3));
-midV = (minV+maxV)/2;
-diffV = (maxV-minV);
-
-% The mat-file contains an interpolated reconstructed volume of the z-wire
-% phantom from an earlier experiment
-if (exist('data\zWirePhantomVolume.mw', 'file'))
-    load('data\zWirePhantomVolume.mw', '-mat');
-else    
-    % creating a grid where we would like to interpolate the data
-    [XV,YV,ZV] = meshgrid(minV(1)+1:0.5:maxV(1)-1,minV(2)+1:0.5:maxV(2)-1,minV(3)+1:0.5:maxV(3)-1);
-    % Interpolating the scattered data - this might take a long time -
-    % therefore it would be advisable to save the interpolated volume in a
-    % mat-file
-    Vq = griddata(allImagesAs3DPtsInWorldWithIntensity(:,1),allImagesAs3DPtsInWorldWithIntensity(:,2),allImagesAs3DPtsInWorldWithIntensity(:,3),allImagesAs3DPtsInWorldWithIntensity(:,4),XV,YV,ZV,'natural');
-end
+% minV = min(allImagesAs3DPtsInWorldWithIntensity(:,1:3));
+% maxV = max(allImagesAs3DPtsInWorldWithIntensity(:,1:3));
+% midV = (minV+maxV)/2;
+% diffV = (maxV-minV);
+% 
+% % The mat-file contains an interpolated reconstructed volume of the z-wire
+% % phantom from an earlier experiment
+% if (exist('data\zWirePhantomVolume.mw', 'file'))
+%     load('data\zWirePhantomVolume.mw', '-mat');
+% else    
+%     % creating a grid where we would like to interpolate the data
+%     [XV,YV,ZV] = meshgrid(minV(1)+1:0.5:maxV(1)-1,minV(2)+1:0.5:maxV(2)-1,minV(3)+1:0.5:maxV(3)-1);
+%     % Interpolating the scattered data - this might take a long time -
+%     % therefore it would be advisable to save the interpolated volume in a
+%     % mat-file
+%     Vq = griddata(allImagesAs3DPtsInWorldWithIntensity(:,1),allImagesAs3DPtsInWorldWithIntensity(:,2),allImagesAs3DPtsInWorldWithIntensity(:,3),allImagesAs3DPtsInWorldWithIntensity(:,4),XV,YV,ZV,'natural');
+% end
 
 %% Visualization of the volume
 % plot isosurfaces at each level, using direct color mapping

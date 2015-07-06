@@ -57,6 +57,7 @@ numImages = 20;
 
 % If the segmented locations are in pixels, convert them to 'mm'.
 scaleMat = diag([xmmPerPx ymmPerPx]);
+dlmwrite('scaleMat.txt',scaleMat,'delimiter',' ');
 c1 = (scaleMat*reshape(c1',2,[]))';
 c2 = (scaleMat*reshape(c2',2,[]))';
 c3 = (scaleMat*reshape(c3',2,[]))';
@@ -136,12 +137,15 @@ zMidImage = [c2 zeros(numImages,1)];
 [R,T,Yf,ErrUSP] = rot3dfit(zMidImage,zMidProbe);
 tfMatImageToProbe = [[R' T']; [zeros(1,3) 1]];
 
+dlmwrite('tfMatImageToProbe.txt',tfMatImageToProbe,'delimiter',' ')
+
 figure, scatter3(zMidProbe(:,1),zMidProbe(:,2),zMidProbe(:,3))
 hold on; scatter3(Yf(:,1),Yf(:,2),Yf(:,3))
 axis equal vis3d
 
 zInImageToCamera = zeros(numImages,3);
 zInImageToCamera_P = zeros(4,1);
+
 
 for i=1:numImages 
     
