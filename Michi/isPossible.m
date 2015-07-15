@@ -1,4 +1,4 @@
-function check = isPossible(target_pos, new_config)
+function check = isPossible(target_pos, best_config)
 global IP_ADDRESS;
 
 firstrow = num2str(target_pos(1,:));
@@ -15,7 +15,7 @@ jtcp('write',jTcpObj,int8('Hello Robot'));
 mssg = char(jtcp('read',jTcpObj)); 
 disp(mssg);
 
-jtcp('write',jTcpObj,int8(['IsPossible ' firstrow ' ' secondrow ' ' thirdrow ' ' new_config]));
+jtcp('write',jTcpObj,int8(['IsPossible ' firstrow ' ' secondrow ' ' thirdrow ' ' best_config]));
 pause(0.1)
 mssg = char(jtcp('read',jTcpObj)); disp(mssg)
 mssgSplit = strsplit(mssg,' ');
@@ -24,6 +24,6 @@ mssgSplit = strsplit(mssg,' ');
 % jtcp('write',jTcpObj,int8('Quit'));
 jTcpObj = jtcp('close',jTcpObj);
 
-check = mssgSplit;
+check = cell2mat(mssgSplit);
 
 end

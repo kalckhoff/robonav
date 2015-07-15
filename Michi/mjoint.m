@@ -1,4 +1,4 @@
-function matrix_joint = mjoint(target_joints_angles)
+function pos_joint = mjoint(target_joints_angles)
 global A D ALPHA;
 
 for k=1:8
@@ -30,6 +30,12 @@ for k=1:8
             case 6
                 matrix_joint{i,k} = T_Matrix{1,k}*T_Matrix{2,k}*T_Matrix{3,k}*T_Matrix{4,k}*T_Matrix{5,k}*T_Matrix{6,k}
         end
+    end
+end
+
+for i = 1:8
+    for k=1:6
+        pos_joint{k,i} = [matrix_joint{k,i}(1,4); matrix_joint{k,i}(2,4); matrix_joint{k,i}(3,4)];
     end
 end
 

@@ -2,8 +2,8 @@ clear all;
 close all;
 %% Globale Definition IP-Adresse des UR5
 global IP_ADDRESS;
-%IP_ADDRESS = '192.168.56.101';
-IP_ADDRESS = '134.28.45.95';
+IP_ADDRESS = '192.168.56.101';
+
 
 %% Globale Definition der UR5 Arml�ngen in mm (D4 u D5 k�nnen auch vertauscht sein !?)
 global A D ALPHA;
@@ -19,23 +19,25 @@ target_pos = endpos(1:3,1:4);
 %% GetPositionJoints
 jAngles = getPositionJoints;
 config = getStatus();
+config = cell2mat(config);
+
+%% Random new Endpos
+randompose = random();
+
+%% Berechnung der der Zielposition durch Inversekinematics
+target_joints_angles = inverse_kinematics(endpos);
+
 
 %% Berechnung der der Position des End Effectors durch Forwardkinematics
 pos_end_effector = forward_kinematics(jAngles);
 
 
-%% Berechnung der der Zielposition durch Inversekinematics
-target_joints_angles = inverse_kinematics(endpos);
-
 %% Berechnung der Positionen der Joints
 
-matrix_joint = mjoint(target_joints_angles);
+pos_joint = mjoint(target_joints_angles);
 
-for i = 1:8
-    for k=1:6
-        pos_joint{k,i} = [matrix_joint{k,i}(1,4); matrix_joint{k,i}(2,4); matrix_joint{k,i}(3,4)];
-    end
-end
+best_config = bestconfig(pos_joint);
+best_config = cell2mat(best_config);
 
 % for i=1:8
 %     laenge_link4(i) = norm(pos_joint{4,i}-pos_joint{3,i});
@@ -45,18 +47,19 @@ end
 
 showpose(pos_joint);
 
-
 %% Anfahren der Home-Position
 
-%movehome();
+movehome();
 
 %% Anfahren des Targets
 
-new_config = ['noflip' ' ' 'up' ' ' 'righty'];
+movetotarget(target_joints_angles);
 
-check = isPossible(target_pos, new_config)
-
-movetoconfig(target_pos, new_config);
+% new_config = ['noflip ' 'up ' 'lefty'];
+% 
+% check = isPossible(target_pos, best_config);
+% 
+% movetoconfig(target_pos, new_config);
 
 % movetotarget(target_joints_angles);
 
@@ -64,7 +67,7 @@ movetoconfig(target_pos, new_config);
 %moveLINJoints(target_joints_angels);
 
 % new_angles = target_joints_angles +20;
-%movePTPJoints(-19.244678 -121.423508 88.558649 -151.915749 4.570095 -265.614639);
+% movePTPJoints();
 
 %pause(1)
  

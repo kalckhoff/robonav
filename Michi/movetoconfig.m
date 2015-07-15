@@ -1,4 +1,4 @@
-function movetoconfig(target_pos, new_config)
+function movetoconfig(target_pos, best_config)
 global IP_ADDRESS;
 
 firstrow = num2str(target_pos(1,:));
@@ -15,7 +15,7 @@ jtcp('write',jTcpObj,int8('Hello Robot'));
 %mssg = char(jtcp('read',jTcpObj)); 
 %disp(mssg);
 
-mssgInt8 = int8(['MoveMinChangeRowWiseStatus ' firstrow ' ' secondrow ' ' thirdrow ' ' new_config]);
+mssgInt8 = int8(['MoveMinChangeRowWiseStatus ' firstrow ' ' secondrow ' ' thirdrow ' ' best_config]);
 jtcp('write',jTcpObj,mssgInt8);
 pause(0.1)
 %mssg = char(jtcp('read',jTcpObj)); disp(mssg);
