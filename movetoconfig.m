@@ -1,5 +1,17 @@
 function movetoconfig(target_pos, best_config)
 global IP_ADDRESS;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% this function moves the robot to a target position using the HomRowWise
+%
+% Input: 	target_pos:		pose of the target
+%			best_config:	wanted configuration of the robot
+%
+% output: 	---
+%
+% global:	IP_ADDRESS:		IP address of the rob6server
+%
+% Robotics and Navigation in Medicine
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 firstrow = num2str(target_pos(1,:));
 secondrow = num2str(target_pos(2,:));

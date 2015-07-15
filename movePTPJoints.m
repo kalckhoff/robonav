@@ -1,5 +1,16 @@
 function movePTPJoints(newJointAngles)
 global IP_ADDRESS;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% this function moves the robot to a target position using the movePTPJoints
+%
+% Input: 	newJointAngles:		joint angles of the target pose
+%
+% output: 	---
+%
+% global:	IP_ADDRESS:		IP address of the rob6server
+%
+% Robotics and Navigation in Medicine
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Open the TCP/IP-Connection
 jTcpObj = jtcp('request', IP_ADDRESS, 5005,'serialize',false);

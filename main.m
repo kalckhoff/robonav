@@ -1,11 +1,18 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% calibrating the UR5 robot, the ultrasound probe and the needle to hit a target in a phantom
+%
+% Robotics and Navigation in Medicine
+% Group 3
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 clear all;
 close all;
-%% Globale Definition IP-Adresse des UR5
+
+%% global definition of rob6server IP adress
 global IP_ADDRESS;
 IP_ADDRESS = '134.28.45.95'; %'192.168.56.101';
 
-
-%% Globale Definition der UR5 Arml�ngen in mm (D4 u D5 k�nnen auch vertauscht sein !?)
+%% global definition of DH parameter
 global A D ALPHA;
 
 D = 1000*[0.089159, 0.0, 0.0, 0.10915, 0.09465, 0.0823];
@@ -52,14 +59,9 @@ target_joints_angles1 = inverse_kinematics(T_testpose_inRobot);
 target_joints_angles2 = inverse_kinematics(T_ultrapose_inRobot);
 
 
-%% Berechnung der der Position des End Effectors durch Forwardkinematics
-%pos_end_effector = forward_kinematics(jAngles);
-
-
-%% Berechnung der Positionen der Joints
+%% calculate jount position
 
 pos_joint = mjoint(target_joints_angles);
-
 best_config = bestconfig(pos_joint);
 best_config = cell2mat(best_config);
 
@@ -68,15 +70,12 @@ for i=1:8
 end
 
 %% Plotten der möglichen config-Positionen
-
 showpose(pos_joint);
 
 %% Anfahren der Home-Position
-
 % movehome();
 
 %% Anfahren des Targets
-
  movetotarget(target_joints_angles1);
  pause;
  moveLINJoints(target_joints_angles1(1:6,1)');
