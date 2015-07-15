@@ -46,7 +46,7 @@ normalToZWire = normalToZWire./norm(normalToZWire);
 % segmentation results.
 
 %% Segmenting Ultrasound images
-numImages = 25;
+numImages = 24;
 [c1, c2, c3, xmmPerPx, ymmPerPx, allImages] = segmentZPhantomPointsInUSImages('data\ultrasoundImagesAndPoses\fileoutpos.txt_', numImages);
 
 % If the segmented locations are in pixels, convert them to 'mm'.
@@ -82,7 +82,7 @@ zMidCamera(i,1) = meanPointsPhantom(1,3) + (c1c2/c1c3)*(meanPointsPhantom(1,2)- 
 zMidCamera(i,2) = meanPointsPhantom(2,3) + (c1c2/c1c3)*(meanPointsPhantom(2,2)- meanPointsPhantom(2,3));
 zMidCamera(i,3) = meanPointsPhantom(3,3) + (c1c2/c1c3)*(meanPointsPhantom(3,2)- meanPointsPhantom(3,3));
 
-
+ 
 end
 
 %% Estimating Tranformation between image coordinate system and US Probe coordinate system.

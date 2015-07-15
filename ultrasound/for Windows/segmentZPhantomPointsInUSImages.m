@@ -80,12 +80,12 @@ for n=0:number_of_pictures
         check (n+1,2) = abs(c1 (n+1,2) - c3 (n+1,2) ) ;
         check (n+1,3) = abs(c2 (n+1,2) - c3 (n+1,2) ) ;    
     end 
-%     imshow(BW2);
-%     title('Image from Ultrasound device - Korrektur 2')
-%     hold on
-%     plot(centroids_selected_2(:,1),centroids_selected_2(:,2), 'b*');
-%     hold off
-%     pause (2) 
+    imshow(BW2);
+    title('Image from Ultrasound device - Korrektur 2')
+    hold on
+    plot(centroids_selected_2(:,1),centroids_selected_2(:,2), 'b*');
+    hold off
+    pause (2) 
 
     if check (n+1,1) > 14  || check (n+1,2)>14  || check (n+1,3) > 14 
         hold on

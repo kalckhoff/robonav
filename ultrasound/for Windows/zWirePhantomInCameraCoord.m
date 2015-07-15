@@ -37,11 +37,11 @@ camServerPort = 3000;
 % Open the TCP/IP-Connection
 disp('Connecting to Cambar Server')
 jTcpObj = jtcp('request', camServerIP, camServerPort,'serialize',false);
-pause(0.1);
+pause(1);
 mssg = char(jtcp('read',jTcpObj)); disp(mssg)
 
 % Send the keyword mtec to authorize the client
-jtcp('write',jTcpObj,int8('mtec')); pause(0.1);
+jtcp('write',jTcpObj,int8('mtec')); pause(1);
 mssg = char(jtcp('read',jTcpObj)); disp(mssg);
 
 disp('Loading Stylus locator')
@@ -49,10 +49,10 @@ disp('Loading Stylus locator')
 % The locator must be located on the camera-pc in the folder
 % C:\locators\
 name = 'stylus';
-jtcp('write',jTcpObj,int8(['LoadLocator ' name ])); pause(0.1);
+jtcp('write',jTcpObj,int8(['LoadLocator ' name ])); pause(1);
 mssg = char(jtcp('read',jTcpObj)); disp(mssg);
 
-jtcp('write',jTcpObj,int8(['LoadLocator ' name ])); pause(0.1);
+jtcp('write',jTcpObj,int8(['LoadLocator ' name ])); pause(1);
 mssg = char(jtcp('read',jTcpObj)); disp(mssg);
 
 disp('Starting the measurements...');
